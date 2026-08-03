@@ -10,6 +10,13 @@ int main(){
 
 ```
 
+
+```nasm
+mov ax,0
+add ax,1
+
+```
+
 *斜体*
 _斜体_
 
