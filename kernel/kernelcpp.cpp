@@ -108,11 +108,17 @@ uint64_t alignup(uint64_t a,uint64_t b){
     return (a / b + 1) * b; 
   }
 }
+
+void kernelpanic(){
+  put_text("kernelpanic");
+  while(1);
+}
+
 #define aaa 0x100000
 memory_range bitmap;
 
 uint64_t bitmap_address;
-void e820_initialize(){
+void init_ram(){
   uint64_t ramlength  = 0;
   uint16_t a = *(uint16_t*)(abc + 0x9A00);
   for(int i = 0;i < a;i++){
@@ -152,10 +158,60 @@ void e820_initialize(){
   
 
 }
+uint64_t search_rsdp(){
+  for (uint64_t addr = abc+ 0xE0000; addr < abc + 0x100000; addr += 16) {
+    uint8_t* p = (uint8_t*)addr;
 
+    if (p[0] == 'R' &&
+        p[1] == 'S' &&
+        p[2] == 'D' &&
+        p[3] == ' ' &&
+        p[4] == 'P' &&
+        p[5] == 'T' &&
+        p[6] == 'R' &&
+        p[7] == ' ') {
+        // RSDP発見
+        return addr;
+        
+    };
+  }
+  return 0;
+}
+struct RSDP {
+    char     signature[8];      // "RSD PTR "
+    uint8_t  checksum;
+    char     oem_id[6];
+    uint8_t  revision;
+    uint32_t rsdt_address;
+
+    // ACPI 2.0以降
+    uint32_t length;
+    uint64_t xsdt_address;
+    uint8_t  extended_checksum;
+    uint8_t  reserved[3];
+};
+void init_acpi(){
+  uint64_t rsdp_addr = search_rsdp();
+  RSDP* rsdp1 = (RSDP*)rsdp_addr;
+  uint8_t sum = 0;
+  uint8_t* p = (uint8_t*)rsdp_addr;
+  for (int i = 0; i < 20; i++) {
+    sum += p[i];
+  }
+  if(sum == 0){
+
+  }else{
+    for (int i = 20; i < 36; i++) {
+      sum += p[i];
+    }
+  }
+
+}
 void main(){
   next_row();
-  e820_initialize();
+  init_acpi();
+  next_row();
+  init_ram();
  
   next_row();
 
