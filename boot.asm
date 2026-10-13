@@ -26,6 +26,7 @@ read:
 
 
 mov dl,[bootdrive]
+
 jmp 0x0000:0xA600
 
 hang:
@@ -46,7 +47,7 @@ dap:
   dw 0x0000
   dq 1
 
-sector equ 9
+sector equ 120
 bootdrive db 0
 aiueo dw 0x3031
 times 446 - ($ - $$) db 0
