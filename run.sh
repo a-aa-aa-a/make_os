@@ -37,5 +37,7 @@ qemu-system-x86_64 \
   -machine q35 \
   -m 512M \
   -drive file=os.bin,format=raw,if=none,id=usbdisk \
+  -drive file=os2.bin,format=raw,if=none,id=usbdisk2 \
   -device ich9-usb-ehci1,id=ehci \
-  -device usb-storage,drive=usbdisk,bootindex=1 
+  -device usb-storage,drive=usbdisk,bootindex=1 \
+  -device usb-storage,drive=usbdisk2
